@@ -25,7 +25,7 @@ jobs:
           token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Configure EAS project
-        run: eas build:configure --platform android --non-interactive
+        run: eas build:configure --platform android
 
       - name: Build APK with EAS
         id: build_apk
