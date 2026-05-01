@@ -31,7 +31,7 @@ jobs:
         id: build_apk
         run: |
           set -e
-          OUTPUT=$(eas build --platform android --profile preview --non-interactive --json)
+          OUTPUT=$(eas build --platform android --profile preview --non-interactive --no-wait --json)
           echo "$OUTPUT" > eas-build-output.json
           BUILD_URL=$(node -e "const fs=require('fs');const data=JSON.parse(fs.readFileSync('eas-build-output.json','utf8'));const first=Array.isArray(data)?data[0]:data;console.log(first?.buildDetailsPageUrl||'');")
           if [ -z "$BUILD_URL" ]; then
