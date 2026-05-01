@@ -33,7 +33,7 @@ jobs:
           set -e
           OUTPUT=$(eas build --platform android --profile preview --non-interactive --no-wait --json)
           echo "$OUTPUT" > eas-build-output.json
-          BUILD_URL=$(node -e "const fs=require('fs');const data=JSON.parse(fs.readFileSync('eas-build-output.json','utf8'));const first=Array.isArray(data)?data[0]:data;console.log(first?.buildDetailsPageUrl||'');")
+          BUILD_URL=$(node -e "const fs=require('fs');const data=JSON.parse(fs.readFileSync('eas-build-output.json','utf8'));const first=Array.isArray(data)?data[0]:data;const url=first?.buildDetailsPageUrl || (first?.project?.ownerAccount?.name && first?.project?.slug && first?.id ? `https://expo.dev/accounts/${first.project.ownerAccount.name}/projects/${first.project.slug}/builds/${first.id}` : '');console.log(url);")
           if [ -z "$BUILD_URL" ]; then
             echo "Não foi possível extrair a URL da build." >&2
             cat eas-build-output.json
