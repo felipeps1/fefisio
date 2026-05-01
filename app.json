@@ -1,0 +1,18 @@
+{
+  "expo": {
+    "name": "FisioAgenda",
+    "slug": "fisioagenda",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "backgroundColor": "#ffffff",
+      "resizeMode": "contain"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "android": {
+      "package": "com.fisioagenda.app",
+      "versionCode": 1
+    }
+  }
+}
