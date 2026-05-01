@@ -1,0 +1,48 @@
+name: Build Android APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Setup Expo and EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Initialize EAS project
+        run: eas init --non-interactive --force
+
+      - name: Build APK with EAS
+        id: build_apk
+        run: |
+          set -e
+          OUTPUT=$(eas build --platform android --profile preview --non-interactive --json)
+          echo "$OUTPUT" > eas-build-output.json
+          BUILD_URL=$(node -e "const fs=require('fs');const data=JSON.parse(fs.readFileSync('eas-build-output.json','utf8'));const first=Array.isArray(data)?data[0]:data;console.log(first?.buildDetailsPageUrl||'');")
+          if [ -z "$BUILD_URL" ]; then
+            echo "Não foi possível extrair a URL da build." >&2
+            cat eas-build-output.json
+            exit 1
+          fi
+          echo "build_url=$BUILD_URL" >> "$GITHUB_OUTPUT"
+
+      - name: Summary
+        run: |
+          echo "## APK em processamento" >> $GITHUB_STEP_SUMMARY
+          echo "Acompanhe e baixe por este link:" >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.build_apk.outputs.build_url }}" >> $GITHUB_STEP_SUMMARY
