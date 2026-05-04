@@ -6,19 +6,12 @@
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "splash": {
-<<<<<<< codex/create-appointment-management-app-9b7961
       "backgroundColor": "#f7f9fb",
       "resizeMode": "contain"
     },
     "assetBundlePatterns": [
       "**/*"
     ],
-=======
-      "backgroundColor": "#ffffff",
-      "resizeMode": "contain"
-    },
-    "assetBundlePatterns": ["**/*"],
->>>>>>> main
     "android": {
       "package": "com.fisioagenda.app",
       "versionCode": 1

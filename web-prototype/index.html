@@ -3,12 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FeFisio - Protótipo Web</title>
+    <title>FeFisio - Controle de Fisioterapia</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <header class="topbar">
-      <h1>FeFisio</h1>
+      <h1>FeFisio - Controle de Fisioterapia</h1>
       <p>Protótipo para alinhamento antes do app mobile</p>
     </header>
 
@@ -19,14 +19,23 @@
     </nav>
 
     <main>
+      <div id="toast" class="toast"></div>
+
       <section id="pacientes" class="tab-content active">
         <h2>Cadastro de Paciente</h2>
-        <form id="patient-form" class="card form-grid">
+        <div class="card">
+          <button type="button" id="new-patient" class="primary">+ Novo cadastro</button>
+        </div>
+
+        <form id="patient-form" class="card form-grid hidden">
           <input type="hidden" name="id" id="patient-id" />
           <label>Nome do paciente<input required name="patientName" /></label>
           <label>Endereço<input required name="patientAddress" /></label>
           <label>Telefone do paciente<input required name="patientPhone" /></label>
-          <label>Nome do responsável financeiro<input required name="financialName" /></label>
+          <div class="inline-field">
+            <label class="grow">Nome do responsável financeiro<input required name="financialName" /></label>
+            <button type="button" id="repeat-patient" class="ghost">Repetir Paciente</button>
+          </div>
           <label>Telefone do responsável financeiro<input required name="financialPhone" /></label>
           <div class="actions-row">
             <button type="submit">Salvar paciente</button>
@@ -54,13 +63,13 @@
       </section>
 
       <section id="agenda" class="tab-content">
-        <h2>Agenda Completa</h2>
+        <h2>Agenda (Calendário)</h2>
         <div class="card form-grid">
           <label>Filtro de período
             <select id="agenda-filter">
               <option value="all">Todos</option>
-              <option value="day">Hoje</option>
-              <option value="week">Esta semana</option>
+              <option value="day">Dia</option>
+              <option value="month">Mês</option>
             </select>
           </label>
         </div>
