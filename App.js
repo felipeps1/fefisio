@@ -43,7 +43,6 @@ export default function App() {
   const [appointments, setAppointments] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [calendarCursor, setCalendarCursor] = useState(new Date());
-  const [calendarCursor, setCalendarCursor] = useState(new Date());
 
   useEffect(() => {
     (async () => {
@@ -205,7 +204,6 @@ export default function App() {
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContent}
         ListEmptyComponent={<Text style={styles.emptyText}>Nenhum agendamento neste mês.</Text>}
-        ListEmptyComponent={<Text style={styles.emptyText}>Nenhum agendamento neste mês.</Text>}
         renderItem={({ item }) => (
           <View style={styles.card}>
             <Text style={styles.cardTitle}>{item.patient}</Text>
@@ -235,9 +233,6 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f7f9fb', paddingHorizontal: 16 },
   title: { fontSize: 28, fontWeight: '700', marginTop: 10, color: '#0b3d91' },
   subtitle: { color: '#4b5563', marginBottom: 14 },
-  calendarControls: { gap: 8, marginBottom: 10 },
-  shortcutRow: { flexDirection: 'row', gap: 8, marginBottom: 10 },
-  monthTitle: { fontSize: 18, fontWeight: '700', color: '#0b3d91' },
   calendarControls: { gap: 8, marginBottom: 10 },
   shortcutRow: { flexDirection: 'row', gap: 8, marginBottom: 10 },
   monthTitle: { fontSize: 18, fontWeight: '700', color: '#0b3d91' },

@@ -1,5 +1,16 @@
 const STORAGE = { patients: 'fefisio:patients', appointments: 'fefisio:appointments' };
 
+function safeReadArray(key) {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
 function normalizePatients(rawPatients) {
   let changed = false;
   const normalized = rawPatients.map((p, i) => {
@@ -28,8 +39,8 @@ const toast = document.getElementById('toast');
 const patientNameInput = patientForm.patientName;
 const calendarTitle = document.getElementById('calendar-title');
 
-let patients = normalizePatients(JSON.parse(localStorage.getItem(STORAGE.patients) || '[]'));
-let appointments = JSON.parse(localStorage.getItem(STORAGE.appointments) || '[]');
+let patients = normalizePatients(safeReadArray(STORAGE.patients));
+let appointments = safeReadArray(STORAGE.appointments);
 let calendarCursor = new Date();
 
 const showToast = (msg, ok = true) => {
@@ -43,7 +54,6 @@ const setTab = (id) => {
   tabContents.forEach((c) => c.classList.toggle('active', c.id === id));
   if (id === 'pacientes') renderPatients();
   if (id === 'agenda') renderAppointments();
-  if (id === 'agenda') renderAppointments();
 };
 tabs.forEach((tab) => tab.addEventListener('click', () => setTab(tab.dataset.tab)));
 
@@ -52,8 +62,6 @@ const saveAll = () => {
   localStorage.setItem(STORAGE.appointments, JSON.stringify(appointments));
 };
 
-function showPatientListMode() { patientForm.classList.add('hidden'); patientsList.classList.remove('hidden'); }
-function showPatientFormMode() { patientForm.classList.remove('hidden'); patientsList.classList.add('hidden'); }
 function showPatientListMode() { patientForm.classList.add('hidden'); patientsList.classList.remove('hidden'); }
 function showPatientFormMode() { patientForm.classList.remove('hidden'); patientsList.classList.add('hidden'); }
 function resetPatientForm() { patientForm.reset(); patientForm.id.value = ''; showPatientListMode(); }
@@ -87,8 +95,6 @@ function renderMonthGrid(items, patientMap, year, month) {
     const dayItems = (byDate[d] || []).sort((a,b)=>a.time.localeCompare(b.time));
     const todayClass = d === today ? 'today' : '';
     html += `<div class="cell ${todayClass}"><div class="day-number">${day}</div>${dayItems.map((a)=>{const p=patientMap[a.patientId];return `<div class="appt">${a.time} - ${p?.patientName || 'Paciente'}</div>`;}).join('')}</div>`;
-    const todayClass = d === today ? 'today' : '';
-    html += `<div class="cell ${todayClass}"><div class="day-number">${day}</div>${dayItems.map((a)=>{const p=patientMap[a.patientId];return `<div class="appt">${a.time} - ${p?.patientName || 'Paciente'}</div>`;}).join('')}</div>`;
   }
   html += '</div>';
   appointmentsList.innerHTML = html;
@@ -115,13 +121,11 @@ function renderMonthAppointmentsList(items, patientMap) {
     const p = patientMap[a.patientId];
     return `<div class="list-item"><strong>${p?.patientName || 'Paciente'}</strong><br/>Data: ${a.date} às ${a.time}<br/>Endereço: ${p?.patientAddress || '-'}<br/>Observações: ${a.notes || '-'}<div class="inline-actions"><button onclick="editAppointment('${a.id}')">Editar</button><button onclick="removeAppointment('${a.id}')" class="danger">Excluir</button></div></div>`;
   }).join('');
-  renderMonthGrid(sorted, patientMap, calendarCursor.getFullYear(), calendarCursor.getMonth());
 }
 
 window.editPatient = (id) => {
   const p = patients.find((x) => x.id === id); if (!p) return;
   Object.entries(p).forEach(([k,v]) => { if (patientForm[k]) patientForm[k].value = v; });
-  showPatientFormMode(); setTab('pacientes');
   showPatientFormMode(); setTab('pacientes');
 };
 window.removePatient = (id) => {
@@ -138,7 +142,6 @@ window.editAppointment = (id) => {
   Object.entries(a).forEach(([k,v]) => { if (appointmentForm[k]) appointmentForm[k].value = v; });
   setTab('agendamento');
 };
-window.removeAppointment = (id) => { appointments = appointments.filter((a) => a.id !== id); saveAll(); renderAppointments(); };
 window.removeAppointment = (id) => { appointments = appointments.filter((a) => a.id !== id); saveAll(); renderAppointments(); };
 
 patientForm.addEventListener('submit', (e) => {
