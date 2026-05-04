@@ -159,13 +159,33 @@ patientForm.addEventListener('submit', (e) => {
 
 appointmentForm.addEventListener('submit', (e) => {
   e.preventDefault();
-  const data = Object.fromEntries(new FormData(appointmentForm).entries());
-  const p = patients.find((x) => x.id === data.patientId);
-  if (!data.patientId || !p) return showToast('Selecione o paciente.', false);
-  if (data.id) appointments = appointments.map((a) => (a.id === data.id ? data : a));
-  else appointments.push({ id: `${Date.now()}`, ...data });
-  resetAppointmentForm(); saveAll(); renderAppointments();
-  showToast(`Confirmado agendamento do paciente ${p?.patientName || ''} cadastrado para ${data.date.split('-').reverse().join('/')} às ${data.time}hs.`);
+  try {
+    const data = Object.fromEntries(new FormData(appointmentForm).entries());
+    let selectedPatient = patients.find((x) => x.id === data.patientId);
+
+    // fallback para navegadores que retornam texto exibido no select
+    if (!selectedPatient) {
+      const selectedLabel = patientSelect.options[patientSelect.selectedIndex]?.textContent?.trim();
+      selectedPatient = patients.find((x) => x.patientName === selectedLabel);
+      if (selectedPatient) data.patientId = selectedPatient.id;
+    }
+
+    if (!data.patientId || !selectedPatient) {
+      showToast('Selecione o paciente.', false);
+      return;
+    }
+
+    if (data.id) appointments = appointments.map((a) => (a.id === data.id ? data : a));
+    else appointments.push({ id: `${Date.now()}`, ...data });
+
+    const formattedDate = data.date.includes('-') ? data.date.split('-').reverse().join('/') : data.date;
+    resetAppointmentForm();
+    saveAll();
+    renderAppointments();
+    showToast(`Confirmado agendamento do paciente ${selectedPatient.patientName} cadastrado para ${formattedDate} às ${data.time}hs.`);
+  } catch {
+    showToast('Erro ao salvar agendamento.', false);
+  }
 });
 
 newPatientBtn.addEventListener('click', () => {
