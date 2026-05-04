@@ -12,6 +12,7 @@ const agendaFilter = document.getElementById('agenda-filter');
 const newPatientBtn = document.getElementById('new-patient');
 const repeatPatientBtn = document.getElementById('repeat-patient');
 const toast = document.getElementById('toast');
+const patientNameInput = patientForm.patientName;
 
 let patients = JSON.parse(localStorage.getItem(STORAGE.patients) || '[]');
 let appointments = JSON.parse(localStorage.getItem(STORAGE.appointments) || '[]');
@@ -34,11 +35,19 @@ const saveAll = () => {
   localStorage.setItem(STORAGE.appointments, JSON.stringify(appointments));
 };
 
-function resetPatientForm() { patientForm.reset(); patientForm.id.value = ''; patientForm.classList.add('hidden'); }
+function showPatientListMode() {
+  patientForm.classList.add('hidden');
+  patientsList.classList.remove('hidden');
+}
+function showPatientFormMode() {
+  patientForm.classList.remove('hidden');
+  patientsList.classList.add('hidden');
+}
+function resetPatientForm() { patientForm.reset(); patientForm.id.value = ''; showPatientListMode(); }
 function resetAppointmentForm() { appointmentForm.reset(); appointmentForm.id.value = ''; }
 
 function renderPatients() {
-  patientSelect.innerHTML = '<option value="">Selecione o paciente</option>';
+  patientSelect.innerHTML = '<option value="" selected disabled>Selecione o paciente</option>';
   patients.forEach((p) => {
     const option = document.createElement('option'); option.value = p.id; option.textContent = p.patientName; patientSelect.appendChild(option);
   });
@@ -114,7 +123,7 @@ function renderAppointments() {
 window.editPatient = (id) => {
   const p = patients.find((x) => x.id === id); if (!p) return;
   Object.entries(p).forEach(([k,v]) => { if (patientForm[k]) patientForm[k].value = v; });
-  patientForm.classList.remove('hidden');
+  showPatientFormMode();
   setTab('pacientes');
 };
 window.removePatient = (id) => {
@@ -151,15 +160,22 @@ patientForm.addEventListener('submit', (e) => {
 appointmentForm.addEventListener('submit', (e) => {
   e.preventDefault();
   const data = Object.fromEntries(new FormData(appointmentForm).entries());
-  if (!data.patientId) return showToast('Selecione o paciente.', false);
   const p = patients.find((x) => x.id === data.patientId);
+  if (!data.patientId || !p) return showToast('Selecione o paciente.', false);
   if (data.id) appointments = appointments.map((a) => (a.id === data.id ? data : a));
   else appointments.push({ id: `${Date.now()}`, ...data });
   resetAppointmentForm(); saveAll(); renderAppointments();
   showToast(`Confirmado agendamento do paciente ${p?.patientName || ''} cadastrado para ${data.date.split('-').reverse().join('/')} às ${data.time}hs.`);
 });
 
-newPatientBtn.addEventListener('click', () => { resetPatientForm(); patientForm.classList.remove('hidden'); });
+newPatientBtn.addEventListener('click', () => {
+  patientForm.reset();
+  patientForm.id.value = '';
+  toast.className = 'toast';
+  toast.textContent = '';
+  showPatientFormMode();
+  patientNameInput.focus();
+});
 cancelPatientBtn.addEventListener('click', resetPatientForm);
 cancelAppointmentBtn.addEventListener('click', resetAppointmentForm);
 repeatPatientBtn.addEventListener('click', () => {
@@ -169,4 +185,5 @@ repeatPatientBtn.addEventListener('click', () => {
 agendaFilter.addEventListener('change', renderAppointments);
 
 renderPatients();
+showPatientListMode();
 renderAppointments();
