@@ -104,6 +104,11 @@ function getRecurringDates(startDate, endDate, weekdays) {
   }
   return dates;
 }
+function formatDateToBR(dateStr) {
+  if (!dateStr || !dateStr.includes('-')) return dateStr;
+  const [y, m, d] = dateStr.split('-');
+  return `${d}-${m}-${y}`;
+}
 
 function renderPatients() {
   patientSelect.innerHTML = '<option value="" selected disabled>Selecione o paciente</option>';
@@ -160,7 +165,7 @@ function renderMonthAppointmentsList(items, patientMap) {
   return items.map((a) => {
     const p = patientMap[a.patientId];
     const recurringAction = a.recurrenceGroupId ? `<button onclick="removeRecurringGroup('${a.recurrenceGroupId}')" class="danger">Excluir recorrência</button>` : '';
-    return `<div class="list-item"><strong>${p?.patientName || 'Paciente'}</strong><br/>Data: ${a.date} às ${a.time}<br/>Endereço: ${p?.patientAddress || '-'}<br/>Observações: ${a.notes || '-'}<div class="inline-actions"><button onclick="editAppointment('${a.id}')">Editar</button><button onclick="removeAppointment('${a.id}')" class="danger">Excluir</button>${recurringAction}</div></div>`;
+    return `<div class="list-item"><strong>${p?.patientName || 'Paciente'}</strong><br/>Data: ${formatDateToBR(a.date)} às ${a.time}<br/>Endereço: ${p?.patientAddress || '-'}<br/>Observações: ${a.notes || '-'}<div class="inline-actions"><button onclick="editAppointment('${a.id}')">Editar</button><button onclick="removeAppointment('${a.id}')" class="danger">Excluir</button>${recurringAction}</div></div>`;
   }).join('');
 }
 
@@ -192,7 +197,7 @@ window.editAppointment = (id) => {
 };
 window.removeAppointment = (id) => {
   const appt = appointments.find((a) => a.id === id);
-  if (!window.confirm(`Confirma excluir o agendamento de ${appt?.date || ''} às ${appt?.time || ''}?`)) return;
+  if (!window.confirm(`Confirma excluir o agendamento de ${formatDateToBR(appt?.date || '')} às ${appt?.time || ''}?`)) return;
   appointments = appointments.filter((a) => a.id !== id);
   saveAll(); renderAppointments();
 };
@@ -241,7 +246,7 @@ appointmentForm.addEventListener('submit', (e) => {
     } else {
       appointments.push({ ...data, id: `a_${Date.now()}` });
     }
-    const formattedDate = data.date.includes('-') ? data.date.split('-').reverse().join('/') : data.date;
+    const formattedDate = data.date.includes('-') ? data.date.split('-').reverse().join('-') : data.date;
     resetAppointmentForm(); saveAll(); renderAppointments();
     showToast(`Confirmado agendamento do paciente ${selectedPatient.patientName} cadastrado para ${formattedDate} às ${data.time}hs.`);
   } catch { showToast('Erro ao salvar agendamento.', false); }
