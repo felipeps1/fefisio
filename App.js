@@ -13,6 +13,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const STORAGE_KEY = '@fisioagenda:appointments';
+const PATIENTS_KEY = '@fisioagenda:patients';
 
 function parseDateTime(value) {
   const normalized = value.trim().replace(' ', 'T');
@@ -39,6 +40,8 @@ export default function App() {
   const [entered, setEntered] = useState(false);
   const [activeTab, setActiveTab] = useState('agenda');
   const [patient, setPatient] = useState('');
+  const [newPatientName, setNewPatientName] = useState('');
+  const [patients, setPatients] = useState([]);
   const [address, setAddress] = useState('');
   const [dateTime, setDateTime] = useState('');
   const [notes, setNotes] = useState('');
@@ -52,12 +55,17 @@ export default function App() {
       if (saved) {
         setAppointments(JSON.parse(saved));
       }
+      const savedPatients = await AsyncStorage.getItem(PATIENTS_KEY);
+      if (savedPatients) setPatients(JSON.parse(savedPatients));
     })();
   }, []);
 
   useEffect(() => {
     AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(appointments));
   }, [appointments]);
+  useEffect(() => {
+    AsyncStorage.setItem(PATIENTS_KEY, JSON.stringify(patients));
+  }, [patients]);
 
   const visibleAppointments = useMemo(() => {
     const year = calendarCursor.getFullYear();
@@ -113,6 +121,7 @@ export default function App() {
     };
 
     setAppointments((prev) => [...prev, newAppointment]);
+    if (patient && !patients.includes(patient)) setPatients((prev) => [...prev, patient]);
     clearForm();
   };
 
@@ -262,14 +271,30 @@ export default function App() {
       {activeTab === 'pacientes' ? (
         <View style={styles.form}>
           <Text style={styles.cardTitle}>Cadastro de Paciente</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Nome do paciente"
+            value={newPatientName}
+            onChangeText={setNewPatientName}
+          />
+          <TouchableOpacity
+            style={styles.addButton}
+            onPress={() => {
+              const normalized = newPatientName.trim();
+              if (!normalized) return;
+              if (!patients.includes(normalized)) setPatients((prev) => [...prev, normalized]);
+              setNewPatientName('');
+            }}
+          >
+            <Text style={styles.buttonText}>+ Novo cadastro</Text>
+          </TouchableOpacity>
           <Text style={styles.cardText}>Pacientes já cadastrados:</Text>
           <FlatList
-            data={[...new Set(appointments.map((a) => a.patient))].filter(Boolean)}
+            data={[...new Set([...patients, ...appointments.map((a) => a.patient)])].filter(Boolean)}
             keyExtractor={(item) => item}
             renderItem={({ item }) => <Text style={styles.cardText}>• {item}</Text>}
             ListEmptyComponent={<Text style={styles.emptyText}>Nenhum paciente cadastrado.</Text>}
           />
-          <Text style={styles.cardText}>Para novo cadastro, crie o agendamento na aba Agendamento.</Text>
         </View>
       ) : null}
       </>
