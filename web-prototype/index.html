@@ -37,6 +37,7 @@
       <button class="tab" data-tab="pacientes">Cadastro de Paciente</button>
       <button class="tab" data-tab="agendamento">Agendamento de Consulta</button>
       <button class="tab" data-tab="agenda">Agenda</button>
+      <button class="tab" data-tab="relatorios">Relatórios</button>
     </nav>
 
     <main>
@@ -114,7 +115,7 @@
                   <label class="weekday-option"><input type="checkbox" name="weekdays" value="6" /> Sábado</label>
                   <label class="weekday-option"><input type="checkbox" name="weekdays" value="0" /> Domingo</label>
                 </div>
-                <label class="recurrence-end">Repetir até<input type="date" id="recurrence-end-date" /></label>
+                <label class="recurrence-end">Repetir até (opcional)<input type="date" id="recurrence-end-date" /></label>
               </div>
               <div class="actions-row">
                 <button type="submit">Salvar agendamento</button>
@@ -139,6 +140,10 @@
           </div>
         </div>
         <div id="appointments-list" class="card list"></div>
+      </section>
+      <section id="relatorios" class="tab-content">
+        <h2>Relatórios</h2>
+        <div id="reports-content" class="card list"></div>
       </section>
       </main>
     </section>

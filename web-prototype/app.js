@@ -58,6 +58,7 @@ const recurringCheckbox = document.getElementById('is-recurring');
 const recurrenceFields = document.getElementById('recurrence-fields');
 const recurrenceEndDate = document.getElementById('recurrence-end-date');
 const todayMessage = document.getElementById('today-message');
+const reportsContent = document.getElementById('reports-content');
 const appointmentHour = document.getElementById('appointment-hour');
 const appointmentMinute = document.getElementById('appointment-minute');
 const appointmentTimeHidden = document.getElementById('appointment-time-hidden');
@@ -77,6 +78,7 @@ const setTab = (id) => {
   tabContents.forEach((c) => c.classList.toggle('active', c.id === id));
   if (id === 'pacientes') renderPatients();
   if (id === 'agenda') renderAppointments();
+  if (id === 'relatorios') renderReports();
 };
 tabs.forEach((tab) => tab.addEventListener('click', () => setTab(tab.dataset.tab)));
 
@@ -108,6 +110,41 @@ function formatDateToBR(dateStr) {
   if (!dateStr || !dateStr.includes('-')) return dateStr;
   const [y, m, d] = dateStr.split('-');
   return `${d}-${m}-${y}`;
+}
+function getPeriodKey(time) {
+  const hour = Number((time || '00:00').split(':')[0]);
+  if (hour >= 6 && hour <= 11) return 'Manhã (06:00-11:59)';
+  if (hour >= 12 && hour <= 17) return 'Tarde (12:00-17:59)';
+  return 'Noite (18:00-05:59)';
+}
+function renderReports() {
+  const byService = {};
+  const byMonth = {};
+  const byPeriod = { 'Manhã (06:00-11:59)': new Set(), 'Tarde (12:00-17:59)': new Set(), 'Noite (18:00-05:59)': new Set() };
+  const weekend = { Sábado: new Set(), Domingo: new Set() };
+
+  appointments.forEach((a) => {
+    const services = Array.isArray(a.services) ? a.services : [];
+    const patientId = a.patientId;
+    services.forEach((s) => { byService[s] ||= new Set(); byService[s].add(patientId); });
+    if (a.date) {
+      const monthKey = a.date.slice(0, 7);
+      byMonth[monthKey] ||= new Set();
+      byMonth[monthKey].add(patientId);
+      const day = new Date(`${a.date}T00:00:00`).getDay();
+      if (day === 6) weekend.Sábado.add(patientId);
+      if (day === 0) weekend.Domingo.add(patientId);
+    }
+    byPeriod[getPeriodKey(a.time)].add(patientId);
+  });
+
+  const renderMap = (obj) => Object.entries(obj).map(([k, v]) => `<li>${k}: ${v.size} paciente(s)</li>`).join('');
+  reportsContent.innerHTML = `
+    <h3>Pacientes por serviço</h3><ul>${renderMap(byService)}</ul>
+    <h3>Pacientes por mês</h3><ul>${renderMap(byMonth)}</ul>
+    <h3>Pacientes por período</h3><ul>${renderMap(byPeriod)}</ul>
+    <h3>Pacientes em finais de semana</h3><ul>${renderMap(weekend)}</ul>
+  `;
 }
 
 function renderPatients() {
@@ -243,9 +280,9 @@ appointmentForm.addEventListener('submit', (e) => {
     } else if (recurringCheckbox.checked) {
       const weekdays = [...appointmentForm.querySelectorAll('input[name="weekdays"]:checked')].map((el) => Number(el.value));
       if (!weekdays.length) return showToast('Selecione ao menos um dia da semana para recorrência.', false);
-      if (!recurrenceEndDate.value) return showToast('Informe a data final da recorrência.', false);
       const recurrenceGroupId = `rg_${Date.now()}`;
-      const recurringDates = getRecurringDates(data.date, recurrenceEndDate.value, weekdays);
+      const endDate = recurrenceEndDate.value || new Date(new Date(`${data.date}T00:00:00`).setMonth(new Date(`${data.date}T00:00:00`).getMonth() + 12)).toISOString().slice(0,10);
+      const recurringDates = getRecurringDates(data.date, endDate, weekdays);
       recurringDates.forEach((date, idx) => {
         appointments.push({ ...data, date, id: `a_${Date.now()}_${idx}`, recurrenceGroupId });
       });
@@ -254,6 +291,7 @@ appointmentForm.addEventListener('submit', (e) => {
     }
     const formattedDate = data.date.includes('-') ? data.date.split('-').reverse().join('-') : data.date;
     resetAppointmentForm(); saveAll(); renderAppointments();
+    renderReports();
     showToast(`Confirmado agendamento do paciente ${selectedPatient.patientName} cadastrado para ${formattedDate} às ${data.time}hs.`);
   } catch { showToast('Erro ao salvar agendamento.', false); }
 });
