@@ -7,10 +7,30 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <header class="topbar">
+    <section id="welcome-screen" class="screen active">
+      <header class="topbar">
+        <h1>FeFisio - Controle de Fisioterapia</h1>
+        <p>Protótipo para alinhamento antes do app mobile</p>
+      </header>
+      <main>
+        <div class="card intro-card">
+          <h2>Bem-vindo(a)</h2>
+          <p>Organize pacientes, agendamentos e agenda semanal em poucos cliques.</p>
+          <button id="enter-system" class="primary">Entrar no sistema</button>
+        </div>
+      </main>
+    </section>
+
+    <section id="system-screen" class="screen">
+      <header class="topbar">
       <h1>FeFisio - Controle de Fisioterapia</h1>
       <p>Protótipo para alinhamento antes do app mobile</p>
     </header>
+
+    <div class="card context-card">
+      <strong>Sobre o sistema:</strong> esta ferramenta ajuda no cadastro de pacientes e no planejamento
+      de consultas avulsas e recorrentes (dias fixos da semana).
+    </div>
 
     <nav class="nav-tabs">
       <button class="tab active" data-tab="pacientes">Cadastro de Paciente</button>
@@ -53,11 +73,25 @@
             <select required name="patientId" id="appointment-patient"></select>
           </label>
           <label>Data<input type="date" required name="date" /></label>
-          <label>Hora<input type="time" required name="time" /></label>
-          <label>Observações<textarea name="notes"></textarea></label>
-          <div class="actions-row">
-            <button type="submit">Salvar agendamento</button>
-            <button type="button" id="cancel-appointment" class="ghost">Cancelar edição</button>
+              <label>Hora<input type="time" required name="time" /></label>
+              <label>Observações<textarea name="notes"></textarea></label>
+              <label><input type="checkbox" id="is-recurring" /> Agendamento recorrente</label>
+              <div id="recurrence-fields" class="hidden">
+                <label>Repetir em quais dias da semana?</label>
+                <div class="weekday-grid">
+                  <label><input type="checkbox" name="weekdays" value="1" /> Seg</label>
+                  <label><input type="checkbox" name="weekdays" value="2" /> Ter</label>
+                  <label><input type="checkbox" name="weekdays" value="3" /> Qua</label>
+                  <label><input type="checkbox" name="weekdays" value="4" /> Qui</label>
+                  <label><input type="checkbox" name="weekdays" value="5" /> Sex</label>
+                  <label><input type="checkbox" name="weekdays" value="6" /> Sáb</label>
+                  <label><input type="checkbox" name="weekdays" value="0" /> Dom</label>
+                </div>
+                <label>Repetir até<input type="date" id="recurrence-end-date" /></label>
+              </div>
+              <div class="actions-row">
+                <button type="submit">Salvar agendamento</button>
+                <button type="button" id="cancel-appointment" class="ghost">Cancelar edição</button>
           </div>
         </form>
       </section>
@@ -79,7 +113,8 @@
         </div>
         <div id="appointments-list" class="card list"></div>
       </section>
-    </main>
+      </main>
+    </section>
 
     <script src="app.js"></script>
   </body>

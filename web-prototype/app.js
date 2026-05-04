@@ -51,6 +51,12 @@ const repeatPatientBtn = document.getElementById('repeat-patient');
 const toast = document.getElementById('toast');
 const patientNameInput = patientForm.patientName;
 const calendarTitle = document.getElementById('calendar-title');
+const welcomeScreen = document.getElementById('welcome-screen');
+const systemScreen = document.getElementById('system-screen');
+const enterSystemBtn = document.getElementById('enter-system');
+const recurringCheckbox = document.getElementById('is-recurring');
+const recurrenceFields = document.getElementById('recurrence-fields');
+const recurrenceEndDate = document.getElementById('recurrence-end-date');
 
 let patients = normalizePatients(safeReadArray(STORAGE.patients));
 let appointments = normalizeAppointments(safeReadArray(STORAGE.appointments));
@@ -79,6 +85,18 @@ function showPatientListMode() { patientForm.classList.add('hidden'); patientsLi
 function showPatientFormMode() { patientForm.classList.remove('hidden'); patientsList.classList.add('hidden'); }
 function resetPatientForm() { patientForm.reset(); patientForm.id.value = ''; showPatientListMode(); }
 function resetAppointmentForm() { appointmentForm.reset(); appointmentForm.id.value = ''; }
+function getRecurringDates(startDate, endDate, weekdays) {
+  const dates = [];
+  const cursor = new Date(`${startDate}T00:00:00`);
+  const last = new Date(`${endDate}T00:00:00`);
+  while (cursor <= last) {
+    if (weekdays.includes(cursor.getDay())) {
+      dates.push(cursor.toISOString().slice(0, 10));
+    }
+    cursor.setDate(cursor.getDate() + 1);
+  }
+  return dates;
+}
 
 function renderPatients() {
   patientSelect.innerHTML = '<option value="" selected disabled>Selecione o paciente</option>';
@@ -180,8 +198,19 @@ appointmentForm.addEventListener('submit', (e) => {
       if (selectedPatient) data.patientId = selectedPatient.id;
     }
     if (!data.patientId || !selectedPatient) return showToast('Selecione o paciente.', false);
-    if (data.id) appointments = appointments.map((a) => (a.id === data.id ? data : a));
-    else appointments.push({ ...data, id: `a_${Date.now()}` });
+    if (data.id) {
+      appointments = appointments.map((a) => (a.id === data.id ? data : a));
+    } else if (recurringCheckbox.checked) {
+      const weekdays = [...appointmentForm.querySelectorAll('input[name="weekdays"]:checked')].map((el) => Number(el.value));
+      if (!weekdays.length) return showToast('Selecione ao menos um dia da semana para recorrência.', false);
+      if (!recurrenceEndDate.value) return showToast('Informe a data final da recorrência.', false);
+      const recurringDates = getRecurringDates(data.date, recurrenceEndDate.value, weekdays);
+      recurringDates.forEach((date, idx) => {
+        appointments.push({ ...data, date, id: `a_${Date.now()}_${idx}` });
+      });
+    } else {
+      appointments.push({ ...data, id: `a_${Date.now()}` });
+    }
     const formattedDate = data.date.includes('-') ? data.date.split('-').reverse().join('/') : data.date;
     resetAppointmentForm(); saveAll(); renderAppointments();
     showToast(`Confirmado agendamento do paciente ${selectedPatient.patientName} cadastrado para ${formattedDate} às ${data.time}hs.`);
@@ -192,6 +221,11 @@ newPatientBtn.addEventListener('click', () => {
   patientForm.reset(); patientForm.id.value = ''; toast.className = 'toast'; toast.textContent = '';
   showPatientFormMode(); patientNameInput.focus();
 });
+enterSystemBtn.addEventListener('click', () => {
+  welcomeScreen.classList.remove('active');
+  systemScreen.classList.add('active');
+});
+recurringCheckbox.addEventListener('change', () => recurrenceFields.classList.toggle('hidden', !recurringCheckbox.checked));
 cancelPatientBtn.addEventListener('click', resetPatientForm);
 cancelAppointmentBtn.addEventListener('click', resetAppointmentForm);
 repeatPatientBtn.addEventListener('click', () => {
@@ -206,6 +240,8 @@ document.getElementById('next-year').addEventListener('click', () => { calendarC
 document.getElementById('go-current-month').addEventListener('click', () => { calendarCursor = new Date(); renderAppointments(); });
 document.getElementById('go-today').addEventListener('click', () => { calendarCursor = new Date(); setTab('agenda'); renderAppointments(); });
 
+welcomeScreen.classList.add('active');
+systemScreen.classList.remove('active');
 renderPatients();
 showPatientListMode();
 renderAppointments();
