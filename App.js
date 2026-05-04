@@ -40,7 +40,8 @@ export default function App() {
   const [entered, setEntered] = useState(false);
   const [activeTab, setActiveTab] = useState('agenda');
   const [patient, setPatient] = useState('');
-  const [newPatientName, setNewPatientName] = useState('');
+  const [patientForm, setPatientForm] = useState({ patientName:'', patientAddress:'', patientPhone:'', financialName:'', financialPhone:'' });
+  const [editingPatient, setEditingPatient] = useState(null);
   const [patients, setPatients] = useState([]);
   const [address, setAddress] = useState('');
   const [dateTime, setDateTime] = useState('');
@@ -121,7 +122,7 @@ export default function App() {
     };
 
     setAppointments((prev) => [...prev, newAppointment]);
-    if (patient && !patients.includes(patient)) setPatients((prev) => [...prev, patient]);
+    if (patient && !patients.some((p) => p.patientName === patient)) setPatients((prev) => [...prev, { id: `${Date.now()}`, patientName: patient, patientAddress: address, patientPhone: '', financialName: '', financialPhone: '' }]);
     clearForm();
   };
 
@@ -271,28 +272,23 @@ export default function App() {
       {activeTab === 'pacientes' ? (
         <View style={styles.form}>
           <Text style={styles.cardTitle}>Cadastro de Paciente</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Nome do paciente"
-            value={newPatientName}
-            onChangeText={setNewPatientName}
-          />
-          <TouchableOpacity
-            style={styles.addButton}
-            onPress={() => {
-              const normalized = newPatientName.trim();
-              if (!normalized) return;
-              if (!patients.includes(normalized)) setPatients((prev) => [...prev, normalized]);
-              setNewPatientName('');
-            }}
-          >
-            <Text style={styles.buttonText}>+ Novo cadastro</Text>
-          </TouchableOpacity>
+          <TextInput style={styles.input} placeholder="Nome do paciente" value={patientForm.patientName} onChangeText={(v)=>setPatientForm((p)=>({...p,patientName:v}))} />
+          <TextInput style={styles.input} placeholder="Endereço" value={patientForm.patientAddress} onChangeText={(v)=>setPatientForm((p)=>({...p,patientAddress:v}))} />
+          <TextInput style={styles.input} placeholder="Telefone do paciente" value={patientForm.patientPhone} onChangeText={(v)=>setPatientForm((p)=>({...p,patientPhone:v}))} />
+          <TextInput style={styles.input} placeholder="Nome do responsável financeiro" value={patientForm.financialName} onChangeText={(v)=>setPatientForm((p)=>({...p,financialName:v}))} />
+          <TextInput style={styles.input} placeholder="Telefone do responsável financeiro" value={patientForm.financialPhone} onChangeText={(v)=>setPatientForm((p)=>({...p,financialPhone:v}))} />
+          <TouchableOpacity style={styles.addButton} onPress={() => {
+            if (!patientForm.patientName.trim()) return;
+            if (editingPatient) setPatients((prev)=>prev.map((p)=>p.id===editingPatient?{...p,...patientForm}:p));
+            else setPatients((prev) => [...prev, { id: `${Date.now()}`, ...patientForm }]);
+            setPatientForm({ patientName:'', patientAddress:'', patientPhone:'', financialName:'', financialPhone:'' });
+            setEditingPatient(null);
+          }}><Text style={styles.buttonText}>{editingPatient ? 'Salvar paciente' : '+ Novo cadastro'}</Text></TouchableOpacity>
           <Text style={styles.cardText}>Pacientes já cadastrados:</Text>
           <FlatList
-            data={[...new Set([...patients, ...appointments.map((a) => a.patient)])].filter(Boolean)}
-            keyExtractor={(item) => item}
-            renderItem={({ item }) => <Text style={styles.cardText}>• {item}</Text>}
+            data={patients}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => <View style={styles.card}><Text style={styles.cardTitle}>{item.patientName}</Text><Text style={styles.cardText}>Endereço: {item.patientAddress}</Text><Text style={styles.cardText}>Tel paciente: {item.patientPhone}</Text><Text style={styles.cardText}>Resp. financeiro: {item.financialName} ({item.financialPhone})</Text><View style={styles.actionsRow}><TouchableOpacity onPress={()=>{setPatientForm(item);setEditingPatient(item.id);}}><Text style={styles.editText}>Editar</Text></TouchableOpacity><TouchableOpacity onPress={()=>setPatients((prev)=>prev.filter((p)=>p.id!==item.id))}><Text style={styles.removeText}>Excluir</Text></TouchableOpacity></View></View>}
             ListEmptyComponent={<Text style={styles.emptyText}>Nenhum paciente cadastrado.</Text>}
           />
         </View>
