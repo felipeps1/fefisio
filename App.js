@@ -36,6 +36,7 @@ function formatDateLabel(value) {
 }
 
 export default function App() {
+  const [activeTab, setActiveTab] = useState('inicio');
   const [patient, setPatient] = useState('');
   const [address, setAddress] = useState('');
   const [dateTime, setDateTime] = useState('');
@@ -144,7 +145,20 @@ export default function App() {
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>FisioAgenda</Text>
       <Text style={styles.subtitle}>Seus atendimentos domiciliares, organizados.</Text>
+      <View style={styles.tabRow}>
+        {['inicio','pacientes','agendamento','agenda'].map((tab) => (
+          <TouchableOpacity key={tab} style={[styles.tabBtn, activeTab === tab && styles.tabBtnActive]} onPress={() => setActiveTab(tab)}>
+            <Text style={[styles.tabBtnText, activeTab === tab && styles.tabBtnTextActive]}>{tab.charAt(0).toUpperCase()+tab.slice(1)}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
 
+      {activeTab === 'inicio' ? (
+        <View style={styles.form}><Text style={styles.cardTitle}>Bem-vindo(a)</Text><Text style={styles.cardText}>Use as abas para navegar entre cadastro de pacientes, agendamento e agenda.</Text></View>
+      ) : null}
+
+      {activeTab === 'agendamento' || activeTab === 'agenda' ? (
+      <>
       <View style={styles.calendarControls}>
         <TouchableOpacity style={styles.modeButton} onPress={() => setCalendarCursor((prev) => new Date(prev.getFullYear() - 1, prev.getMonth(), 1))}>
           <Text style={styles.modeButtonText}>« Ano anterior</Text>
@@ -225,24 +239,33 @@ export default function App() {
           </View>
         )}
       />
+      </>
+      ) : null}
+
+      {activeTab === 'pacientes' ? (
+        <View style={styles.form}>
+          <Text style={styles.cardTitle}>Cadastro de Paciente</Text>
+          <Text style={styles.cardText}>No app mobile atual, o cadastro é realizado no campo \"Paciente\" da aba Agendamento.</Text>
+        </View>
+      ) : null}
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f7f9fb', paddingHorizontal: 16 },
-  title: { fontSize: 28, fontWeight: '700', marginTop: 10, color: '#0b3d91' },
+  title: { fontSize: 28, fontWeight: '700', marginTop: 10, color: '#00990f' },
   subtitle: { color: '#4b5563', marginBottom: 14 },
   calendarControls: { gap: 8, marginBottom: 10 },
   shortcutRow: { flexDirection: 'row', gap: 8, marginBottom: 10 },
-  monthTitle: { fontSize: 18, fontWeight: '700', color: '#0b3d91' },
+  monthTitle: { fontSize: 18, fontWeight: '700', color: '#00990f' },
   modeButton: {
     paddingVertical: 8,
     paddingHorizontal: 12,
     borderRadius: 8,
     backgroundColor: '#e5e7eb',
   },
-  modeButtonActive: { backgroundColor: '#0b3d91' },
+  modeButtonActive: { backgroundColor: '#00990f' },
   modeButtonText: { color: '#374151', fontWeight: '600' },
   modeButtonTextActive: { color: '#fff' },
   form: { backgroundColor: '#fff', borderRadius: 12, padding: 12, marginBottom: 12 },
@@ -258,7 +281,7 @@ const styles = StyleSheet.create({
   },
   notesInput: { minHeight: 64, textAlignVertical: 'top' },
   addButton: {
-    backgroundColor: '#0b3d91',
+    backgroundColor: '#00990f',
     borderRadius: 8,
     paddingVertical: 12,
     paddingHorizontal: 12,
@@ -283,3 +306,8 @@ const styles = StyleSheet.create({
   routeText: { color: '#0f766e', fontWeight: '600' },
   removeText: { color: '#b91c1c', fontWeight: '600' },
 });
+  tabRow: { flexDirection: 'row', gap: 6, marginBottom: 10, flexWrap: 'wrap' },
+  tabBtn: { paddingVertical: 8, paddingHorizontal: 10, borderRadius: 8, backgroundColor: '#e5e7eb' },
+  tabBtnActive: { backgroundColor: '#00990f' },
+  tabBtnText: { color: '#111827', fontWeight: '600' },
+  tabBtnTextActive: { color: '#fff' },
