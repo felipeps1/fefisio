@@ -1,0 +1,41 @@
+body { margin:0; font-family: Arial, sans-serif; background:#f3f6fb; color:#1f2937; }
+.screen { display:none; }
+.screen.active { display:block; }
+.topbar { background:#0b3d91; color:white; padding:20px; }
+.nav-tabs { display:flex; gap:8px; padding:12px; background:white; position:sticky; top:0; }
+.tab { padding:10px 14px; border:0; border-radius:8px; background:#e5e7eb; cursor:pointer; }
+.tab.active { background:#0b3d91; color:white; }
+main { padding:16px; max-width:900px; margin:0 auto; }
+.tab-content { display:none; }
+.tab-content.active { display:block; }
+.card { background:white; border-radius:10px; padding:14px; margin-bottom:14px; }
+.form-grid { display:grid; gap:10px; }
+label { display:grid; gap:4px; font-size:14px; }
+input,select,textarea,button { font:inherit; padding:10px; border-radius:8px; border:1px solid #d1d5db; }
+button[type='submit'], .primary { background:#0b3d91; color:white; border:none; font-weight:600; }
+.list-item { border:1px solid #e5e7eb; border-radius:8px; padding:10px; margin-bottom:8px; }
+.inline-actions { margin-top:8px; display:flex; gap:8px; }
+.ghost { background:white; }
+.danger { background:#b91c1c; color:#fff; border:none; }
+.empty { color:#6b7280; }
+.actions-row { display:flex; gap:8px; }
+.inline-field { display:flex; align-items:end; gap:8px; }
+.inline-field .grow { flex:1; }
+.hidden { display:none; }
+.toast { display:none; position:fixed; right:20px; top:20px; z-index:20; color:white; padding:12px 14px; border-radius:8px; }
+.toast.show { display:block; }
+.toast.ok { background:#166534; }
+.toast.error { background:#b91c1c; }
+.month-grid { display:grid; grid-template-columns: repeat(7,1fr); gap:8px; }
+.month-grid .head { font-weight:700; text-align:center; padding:6px; }
+.month-grid .cell { min-height:100px; background:#fff; border:1px solid #e5e7eb; border-radius:8px; padding:6px; }
+.month-grid .cell.empty { background:transparent; border:none; }
+.month-grid .cell.today { outline:2px solid #0b3d91; }
+.day-number { font-weight:700; margin-bottom:4px; }
+.appt { font-size:12px; background:#eef2ff; border-radius:6px; padding:4px; margin-bottom:4px; }
+.calendar-controls { display:flex; gap:8px; align-items:center; justify-content:space-between; flex-wrap:wrap; }
+.calendar-shortcuts { margin-top:10px; display:flex; gap:8px; }
+#calendar-title { font-size:20px; }
+.intro-card { max-width:560px; margin:40px auto; text-align:center; }
+.context-card { margin:14px 16px; }
+.weekday-grid { display:grid; grid-template-columns: repeat(4, minmax(80px, 1fr)); gap:8px; }
