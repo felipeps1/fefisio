@@ -57,6 +57,7 @@ const enterSystemBtn = document.getElementById('enter-system');
 const recurringCheckbox = document.getElementById('is-recurring');
 const recurrenceFields = document.getElementById('recurrence-fields');
 const recurrenceEndDate = document.getElementById('recurrence-end-date');
+const todayMessage = document.getElementById('today-message');
 
 let patients = normalizePatients(safeReadArray(STORAGE.patients));
 let appointments = normalizeAppointments(safeReadArray(STORAGE.appointments));
@@ -150,7 +151,8 @@ function renderMonthAppointmentsList(items, patientMap) {
   if (!items.length) return '<p class="empty">Nenhum agendamento neste mês.</p>';
   return items.map((a) => {
     const p = patientMap[a.patientId];
-    return `<div class="list-item"><strong>${p?.patientName || 'Paciente'}</strong><br/>Data: ${a.date} às ${a.time}<br/>Endereço: ${p?.patientAddress || '-'}<br/>Observações: ${a.notes || '-'}<div class="inline-actions"><button onclick="editAppointment('${a.id}')">Editar</button><button onclick="removeAppointment('${a.id}')" class="danger">Excluir</button></div></div>`;
+    const recurringAction = a.recurrenceGroupId ? `<button onclick="removeRecurringGroup('${a.recurrenceGroupId}')" class="danger">Excluir recorrência</button>` : '';
+    return `<div class="list-item"><strong>${p?.patientName || 'Paciente'}</strong><br/>Data: ${a.date} às ${a.time}<br/>Endereço: ${p?.patientAddress || '-'}<br/>Observações: ${a.notes || '-'}<div class="inline-actions"><button onclick="editAppointment('${a.id}')">Editar</button><button onclick="removeAppointment('${a.id}')" class="danger">Excluir</button>${recurringAction}</div></div>`;
   }).join('');
 }
 
@@ -174,6 +176,11 @@ window.editAppointment = (id) => {
   setTab('agendamento');
 };
 window.removeAppointment = (id) => { appointments = appointments.filter((a) => a.id !== id); saveAll(); renderAppointments(); };
+window.removeRecurringGroup = (groupId) => {
+  appointments = appointments.filter((a) => a.recurrenceGroupId !== groupId);
+  saveAll(); renderAppointments();
+  showToast('Recorrência excluída com sucesso.');
+};
 
 patientForm.addEventListener('submit', (e) => {
   e.preventDefault();
@@ -204,9 +211,10 @@ appointmentForm.addEventListener('submit', (e) => {
       const weekdays = [...appointmentForm.querySelectorAll('input[name="weekdays"]:checked')].map((el) => Number(el.value));
       if (!weekdays.length) return showToast('Selecione ao menos um dia da semana para recorrência.', false);
       if (!recurrenceEndDate.value) return showToast('Informe a data final da recorrência.', false);
+      const recurrenceGroupId = `rg_${Date.now()}`;
       const recurringDates = getRecurringDates(data.date, recurrenceEndDate.value, weekdays);
       recurringDates.forEach((date, idx) => {
-        appointments.push({ ...data, date, id: `a_${Date.now()}_${idx}` });
+        appointments.push({ ...data, date, id: `a_${Date.now()}_${idx}`, recurrenceGroupId });
       });
     } else {
       appointments.push({ ...data, id: `a_${Date.now()}` });
@@ -224,6 +232,7 @@ newPatientBtn.addEventListener('click', () => {
 enterSystemBtn.addEventListener('click', () => {
   welcomeScreen.classList.remove('active');
   systemScreen.classList.add('active');
+  setTab('home');
 });
 recurringCheckbox.addEventListener('change', () => recurrenceFields.classList.toggle('hidden', !recurringCheckbox.checked));
 cancelPatientBtn.addEventListener('click', resetPatientForm);
@@ -242,6 +251,7 @@ document.getElementById('go-today').addEventListener('click', () => { calendarCu
 
 welcomeScreen.classList.add('active');
 systemScreen.classList.remove('active');
+todayMessage.textContent = `Seja bem-vindo, hoje é dia ${new Intl.DateTimeFormat('pt-BR').format(new Date())}.`;
 renderPatients();
 showPatientListMode();
 renderAppointments();

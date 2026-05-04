@@ -33,7 +33,8 @@
     </div>
 
     <nav class="nav-tabs">
-      <button class="tab active" data-tab="pacientes">Cadastro de Paciente</button>
+      <button class="tab active" data-tab="home">Início</button>
+      <button class="tab" data-tab="pacientes">Cadastro de Paciente</button>
       <button class="tab" data-tab="agendamento">Agendamento de Consulta</button>
       <button class="tab" data-tab="agenda">Agenda</button>
     </nav>
@@ -41,7 +42,15 @@
     <main>
       <div id="toast" class="toast"></div>
 
-      <section id="pacientes" class="tab-content active">
+      <section id="home" class="tab-content active">
+        <h2 id="welcome-title">Seja bem-vindo(a)</h2>
+        <div class="card">
+          <p id="today-message"></p>
+          <p>Este sistema permite cadastrar pacientes, organizar consultas avulsas e recorrentes e navegar pela agenda mensal.</p>
+        </div>
+      </section>
+
+      <section id="pacientes" class="tab-content">
         <h2>Cadastro de Paciente</h2>
         <div class="card">
           <button type="button" id="new-patient" class="primary">+ Novo cadastro</button>
@@ -78,7 +87,7 @@
               <label><input type="checkbox" id="is-recurring" /> Agendamento recorrente</label>
               <div id="recurrence-fields" class="hidden">
                 <label>Repetir em quais dias da semana?</label>
-                <div class="weekday-grid">
+                <div class="weekday-list">
                   <label><input type="checkbox" name="weekdays" value="1" /> Seg</label>
                   <label><input type="checkbox" name="weekdays" value="2" /> Ter</label>
                   <label><input type="checkbox" name="weekdays" value="3" /> Qua</label>

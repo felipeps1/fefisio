@@ -38,4 +38,4 @@ button[type='submit'], .primary { background:#0b3d91; color:white; border:none; 
 #calendar-title { font-size:20px; }
 .intro-card { max-width:560px; margin:40px auto; text-align:center; }
 .context-card { margin:14px 16px; }
-.weekday-grid { display:grid; grid-template-columns: repeat(4, minmax(80px, 1fr)); gap:8px; }
+.weekday-list { display:flex; flex-direction:column; gap:6px; align-items:flex-start; }
