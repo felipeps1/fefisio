@@ -1,4 +1,18 @@
 const STORAGE = { patients: 'fefisio:patients', appointments: 'fefisio:appointments' };
+
+function normalizePatients(rawPatients) {
+  let changed = false;
+  const normalized = rawPatients.map((p, i) => {
+    if (!p.id || p.id === 'undefined') {
+      changed = true;
+      return { ...p, id: `p_${Date.now()}_${i}` };
+    }
+    return p;
+  });
+  if (changed) localStorage.setItem(STORAGE.patients, JSON.stringify(normalized));
+  return normalized;
+}
+
 const tabs = document.querySelectorAll('.tab');
 const tabContents = document.querySelectorAll('.tab-content');
 const patientForm = document.getElementById('patient-form');
@@ -14,7 +28,7 @@ const repeatPatientBtn = document.getElementById('repeat-patient');
 const toast = document.getElementById('toast');
 const patientNameInput = patientForm.patientName;
 
-let patients = JSON.parse(localStorage.getItem(STORAGE.patients) || '[]');
+let patients = normalizePatients(JSON.parse(localStorage.getItem(STORAGE.patients) || '[]'));
 let appointments = JSON.parse(localStorage.getItem(STORAGE.appointments) || '[]');
 
 const showToast = (msg, ok = true) => {
@@ -161,7 +175,7 @@ appointmentForm.addEventListener('submit', (e) => {
   e.preventDefault();
   try {
     const data = Object.fromEntries(new FormData(appointmentForm).entries());
-    let selectedPatient = patients.find((x) => x.id === data.patientId);
+    let selectedPatient = patients.find((x) => String(x.id) === String(data.patientId));
 
     // fallback para navegadores que retornam texto exibido no select
     if (!selectedPatient) {
