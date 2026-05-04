@@ -20,15 +20,17 @@ button[type='submit'], .primary { background:#0b3d91; color:white; border:none; 
 .inline-field { display:flex; align-items:end; gap:8px; }
 .inline-field .grow { flex:1; }
 .hidden { display:none; }
-.calendar-day h3 { margin:8px 0; }
 .toast { display:none; position:fixed; right:20px; top:20px; z-index:20; color:white; padding:12px 14px; border-radius:8px; }
 .toast.show { display:block; }
 .toast.ok { background:#166534; }
 .toast.error { background:#b91c1c; }
-
 .month-grid { display:grid; grid-template-columns: repeat(7,1fr); gap:8px; }
 .month-grid .head { font-weight:700; text-align:center; padding:6px; }
 .month-grid .cell { min-height:100px; background:#fff; border:1px solid #e5e7eb; border-radius:8px; padding:6px; }
 .month-grid .cell.empty { background:transparent; border:none; }
+.month-grid .cell.today { outline:2px solid #0b3d91; }
 .day-number { font-weight:700; margin-bottom:4px; }
 .appt { font-size:12px; background:#eef2ff; border-radius:6px; padding:4px; margin-bottom:4px; }
+.calendar-controls { display:flex; gap:8px; align-items:center; justify-content:space-between; flex-wrap:wrap; }
+.calendar-shortcuts { margin-top:10px; display:flex; gap:8px; }
+#calendar-title { font-size:20px; }

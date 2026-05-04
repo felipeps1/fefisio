@@ -35,6 +35,8 @@ function formatDateLabel(value) {
   }).format(date);
 }
 
+<<<<<<< codex/create-appointment-management-app-6qzpt3
+=======
 function getWeekRange(baseDate) {
   const day = baseDate.getDay();
   const diffToMonday = day === 0 ? -6 : 1 - day;
@@ -49,6 +51,7 @@ function getWeekRange(baseDate) {
   return { start, end };
 }
 
+>>>>>>> main
 export default function App() {
   const [patient, setPatient] = useState('');
   const [address, setAddress] = useState('');
@@ -56,8 +59,12 @@ export default function App() {
   const [notes, setNotes] = useState('');
   const [appointments, setAppointments] = useState([]);
   const [editingId, setEditingId] = useState(null);
+<<<<<<< codex/create-appointment-management-app-6qzpt3
+  const [calendarCursor, setCalendarCursor] = useState(new Date());
+=======
   const [dateFilter, setDateFilter] = useState('');
   const [viewMode, setViewMode] = useState('all');
+>>>>>>> main
 
   useEffect(() => {
     (async () => {
@@ -73,6 +80,22 @@ export default function App() {
   }, [appointments]);
 
   const visibleAppointments = useMemo(() => {
+<<<<<<< codex/create-appointment-management-app-6qzpt3
+    const year = calendarCursor.getFullYear();
+    const month = calendarCursor.getMonth();
+
+    return appointments
+      .filter((item) => {
+        const itemDate = parseDateTime(item.dateTime);
+        return itemDate && itemDate.getFullYear() === year && itemDate.getMonth() === month;
+      })
+      .sort((a, b) => parseDateTime(a.dateTime) - parseDateTime(b.dateTime));
+  }, [appointments, calendarCursor]);
+
+  const calendarTitle = useMemo(() => (
+    new Intl.DateTimeFormat('pt-BR', { month: 'long', year: 'numeric' }).format(calendarCursor)
+  ), [calendarCursor]);
+=======
     const now = new Date();
     const { start, end } = getWeekRange(now);
     const todayIso = now.toISOString().slice(0, 10);
@@ -97,6 +120,7 @@ export default function App() {
 
     return [...filtered].sort((a, b) => parseDateTime(a.dateTime) - parseDateTime(b.dateTime));
   }, [appointments, dateFilter, viewMode]);
+>>>>>>> main
 
   const clearForm = () => {
     setPatient('');
@@ -170,6 +194,31 @@ export default function App() {
       <Text style={styles.title}>FisioAgenda</Text>
       <Text style={styles.subtitle}>Seus atendimentos domiciliares, organizados.</Text>
 
+<<<<<<< codex/create-appointment-management-app-6qzpt3
+      <View style={styles.calendarControls}>
+        <TouchableOpacity style={styles.modeButton} onPress={() => setCalendarCursor((prev) => new Date(prev.getFullYear() - 1, prev.getMonth(), 1))}>
+          <Text style={styles.modeButtonText}>« Ano anterior</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.modeButton} onPress={() => setCalendarCursor((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1))}>
+          <Text style={styles.modeButtonText}>‹ Mês anterior</Text>
+        </TouchableOpacity>
+        <Text style={styles.monthTitle}>{calendarTitle.charAt(0).toUpperCase() + calendarTitle.slice(1)}</Text>
+        <TouchableOpacity style={styles.modeButton} onPress={() => setCalendarCursor((prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1))}>
+          <Text style={styles.modeButtonText}>Mês seguinte ›</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.modeButton} onPress={() => setCalendarCursor((prev) => new Date(prev.getFullYear() + 1, prev.getMonth(), 1))}>
+          <Text style={styles.modeButtonText}>Ano seguinte »</Text>
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.shortcutRow}>
+        <TouchableOpacity style={styles.modeButtonActive} onPress={() => setCalendarCursor(new Date())}>
+          <Text style={styles.modeButtonTextActive}>Mês atual</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.modeButton} onPress={() => setCalendarCursor(new Date())}>
+          <Text style={styles.modeButtonText}>Hoje</Text>
+        </TouchableOpacity>
+=======
       <View style={styles.modeRow}>
         {[
           { key: 'all', label: 'Todos' },
@@ -186,6 +235,7 @@ export default function App() {
             </Text>
           </TouchableOpacity>
         ))}
+>>>>>>> main
       </View>
 
       <View style={styles.form}>
@@ -217,6 +267,8 @@ export default function App() {
         </View>
       </View>
 
+<<<<<<< codex/create-appointment-management-app-6qzpt3
+=======
       <TextInput
         style={styles.input}
         placeholder="Filtro extra por data (YYYY-MM-DD)"
@@ -224,11 +276,16 @@ export default function App() {
         onChangeText={setDateFilter}
       />
 
+>>>>>>> main
       <FlatList
         data={visibleAppointments}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContent}
+<<<<<<< codex/create-appointment-management-app-6qzpt3
+        ListEmptyComponent={<Text style={styles.emptyText}>Nenhum agendamento neste mês.</Text>}
+=======
         ListEmptyComponent={<Text style={styles.emptyText}>Nenhum agendamento encontrado.</Text>}
+>>>>>>> main
         renderItem={({ item }) => (
           <View style={styles.card}>
             <Text style={styles.cardTitle}>{item.patient}</Text>
@@ -258,7 +315,13 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f7f9fb', paddingHorizontal: 16 },
   title: { fontSize: 28, fontWeight: '700', marginTop: 10, color: '#0b3d91' },
   subtitle: { color: '#4b5563', marginBottom: 14 },
+<<<<<<< codex/create-appointment-management-app-6qzpt3
+  calendarControls: { gap: 8, marginBottom: 10 },
+  shortcutRow: { flexDirection: 'row', gap: 8, marginBottom: 10 },
+  monthTitle: { fontSize: 18, fontWeight: '700', color: '#0b3d91' },
+=======
   modeRow: { flexDirection: 'row', gap: 8, marginBottom: 10 },
+>>>>>>> main
   modeButton: {
     paddingVertical: 8,
     paddingHorizontal: 12,
