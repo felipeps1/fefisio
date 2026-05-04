@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FeFisio - Controle de Fisioterapia</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <section id="welcome-screen" class="screen active">
+      <header class="topbar">
+        <h1>FeFisio - Controle de Fisioterapia</h1>
+        <p>Protótipo para alinhamento antes do app mobile</p>
+      </header>
+      <main>
+        <div class="card intro-card">
+          <h2>Bem-vindo(a)</h2>
+          <p>Organize pacientes, agendamentos e agenda semanal em poucos cliques.</p>
+          <button id="enter-system" class="primary">Entrar no sistema</button>
+        </div>
+      </main>
+    </section>
+
+    <section id="system-screen" class="screen">
+      <header class="topbar">
+      <h1>FeFisio - Controle de Fisioterapia</h1>
+      <p>Protótipo para alinhamento antes do app mobile</p>
+    </header>
+
+    <div class="card context-card">
+      <strong>Sobre o sistema:</strong> esta ferramenta ajuda no cadastro de pacientes e no planejamento
+      de consultas avulsas e recorrentes (dias fixos da semana).
+    </div>
+
+    <nav class="nav-tabs">
+      <button class="tab active" data-tab="home">Início</button>
+      <button class="tab" data-tab="pacientes">Cadastro de Paciente</button>
+      <button class="tab" data-tab="agendamento">Agendamento de Consulta</button>
+      <button class="tab" data-tab="agenda">Agenda</button>
+    </nav>
+
+    <main>
+      <div id="toast" class="toast"></div>
+
+      <section id="home" class="tab-content active">
+        <h2 id="welcome-title">Seja bem-vindo(a)</h2>
+        <div class="card">
+          <p id="today-message"></p>
+          <p>Este sistema permite cadastrar pacientes, organizar consultas avulsas e recorrentes e navegar pela agenda mensal.</p>
+        </div>
+      </section>
+
+      <section id="pacientes" class="tab-content">
+        <h2>Cadastro de Paciente</h2>
+        <div class="card">
+          <button type="button" id="new-patient" class="primary">+ Novo cadastro</button>
+        </div>
+
+        <form id="patient-form" class="card form-grid hidden">
+          <input type="hidden" name="id" id="patient-id" />
+          <label>Nome do paciente<input required name="patientName" /></label>
+          <label>Endereço<input required name="patientAddress" /></label>
+          <label>Telefone do paciente<input required name="patientPhone" /></label>
+          <div class="inline-field">
+            <label class="grow">Nome do responsável financeiro<input required name="financialName" /></label>
+            <button type="button" id="repeat-patient" class="ghost">Repetir Paciente</button>
+          </div>
+          <label>Telefone do responsável financeiro<input required name="financialPhone" /></label>
+          <div class="actions-row">
+            <button type="submit">Salvar paciente</button>
+            <button type="button" id="cancel-patient" class="ghost">Cancelar edição</button>
+          </div>
+        </form>
+        <div id="patients-list" class="card list"></div>
+      </section>
+
+      <section id="agendamento" class="tab-content">
+        <h2>Agendamento de Consulta</h2>
+        <form id="appointment-form" class="card form-grid">
+          <input type="hidden" name="id" id="appointment-id" />
+          <label>Paciente
+            <select required name="patientId" id="appointment-patient"></select>
+          </label>
+          <label>Data<input type="date" required name="date" /></label>
+          <label>Hora
+            <input type="hidden" required name="time" id="appointment-time-hidden" />
+            <div class="time-selectors">
+              <select id="appointment-hour"></select>
+              <span>:</span>
+              <select id="appointment-minute">
+                <option value="00">00</option><option value="05">05</option><option value="10">10</option><option value="15">15</option>
+                <option value="20">20</option><option value="25">25</option><option value="30">30</option><option value="35">35</option>
+                <option value="40">40</option><option value="45">45</option><option value="50">50</option><option value="55">55</option>
+              </select>
+            </div>
+          </label>
+          <label>Observações<textarea name="notes"></textarea></label>
+          <label>Serviços da consulta</label>
+          <div class="weekday-list">
+            <label class="weekday-option"><input type="checkbox" name="services" value="Fisioterapia" /> Fisioterapia</label>
+            <label class="weekday-option"><input type="checkbox" name="services" value="Acupuntura" /> Acupuntura</label>
+            <label class="weekday-option"><input type="checkbox" name="services" value="Pilates" /> Pilates</label>
+            <label class="weekday-option"><input type="checkbox" name="services" value="RPG" /> RPG</label>
+          </div>
+          <label><input type="checkbox" id="is-recurring" /> Agendamento recorrente</label>
+              <div id="recurrence-fields" class="hidden">
+                <label class="recurrence-title">Repetir em quais dias da semana?</label>
+                <div class="weekday-list">
+                  <label class="weekday-option"><input type="checkbox" name="weekdays" value="1" /> Segunda-Feira</label>
+                  <label class="weekday-option"><input type="checkbox" name="weekdays" value="2" /> Terça-Feira</label>
+                  <label class="weekday-option"><input type="checkbox" name="weekdays" value="3" /> Quarta-Feira</label>
+                  <label class="weekday-option"><input type="checkbox" name="weekdays" value="4" /> Quinta-Feira</label>
+                  <label class="weekday-option"><input type="checkbox" name="weekdays" value="5" /> Sexta-Feira</label>
+                  <label class="weekday-option"><input type="checkbox" name="weekdays" value="6" /> Sábado</label>
+                  <label class="weekday-option"><input type="checkbox" name="weekdays" value="0" /> Domingo</label>
+                </div>
+                <label class="recurrence-end">Repetir até<input type="date" id="recurrence-end-date" /></label>
+              </div>
+              <div class="actions-row">
+                <button type="submit">Salvar agendamento</button>
+                <button type="button" id="cancel-appointment" class="ghost">Cancelar edição</button>
+          </div>
+        </form>
+      </section>
+
+      <section id="agenda" class="tab-content">
+        <h2>Agenda (Calendário mensal)</h2>
+        <div class="card">
+          <div class="calendar-controls">
+            <button id="prev-year" class="ghost">« Ano anterior</button>
+            <button id="prev-month" class="ghost">‹ Mês anterior</button>
+            <strong id="calendar-title"></strong>
+            <button id="next-month" class="ghost">Mês seguinte ›</button>
+            <button id="next-year" class="ghost">Ano seguinte »</button>
+          </div>
+          <div class="calendar-shortcuts">
+            <button id="go-current-month" class="primary">Mês atual</button>
+            <button id="go-today" class="ghost">Hoje</button>
+          </div>
+        </div>
+        <div id="appointments-list" class="card list"></div>
+      </section>
+      </main>
+    </section>
+
+    <script src="app.js"></script>
+  </body>
+</html>
