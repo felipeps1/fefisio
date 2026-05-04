@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FeFisio - Controle de Fisioterapia</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <h1>FeFisio - Controle de Fisioterapia</h1>
+      <p>Protótipo para alinhamento antes do app mobile</p>
+    </header>
+
+    <nav class="nav-tabs">
+      <button class="tab active" data-tab="pacientes">Cadastro de Paciente</button>
+      <button class="tab" data-tab="agendamento">Agendamento de Consulta</button>
+      <button class="tab" data-tab="agenda">Agenda</button>
+    </nav>
+
+    <main>
+      <div id="toast" class="toast"></div>
+
+      <section id="pacientes" class="tab-content active">
+        <h2>Cadastro de Paciente</h2>
+        <div class="card">
+          <button type="button" id="new-patient" class="primary">+ Novo cadastro</button>
+        </div>
+
+        <form id="patient-form" class="card form-grid hidden">
+          <input type="hidden" name="id" id="patient-id" />
+          <label>Nome do paciente<input required name="patientName" /></label>
+          <label>Endereço<input required name="patientAddress" /></label>
+          <label>Telefone do paciente<input required name="patientPhone" /></label>
+          <div class="inline-field">
+            <label class="grow">Nome do responsável financeiro<input required name="financialName" /></label>
+            <button type="button" id="repeat-patient" class="ghost">Repetir Paciente</button>
+          </div>
+          <label>Telefone do responsável financeiro<input required name="financialPhone" /></label>
+          <div class="actions-row">
+            <button type="submit">Salvar paciente</button>
+            <button type="button" id="cancel-patient" class="ghost">Cancelar edição</button>
+          </div>
+        </form>
+        <div id="patients-list" class="card list"></div>
+      </section>
+
+      <section id="agendamento" class="tab-content">
+        <h2>Agendamento de Consulta</h2>
+        <form id="appointment-form" class="card form-grid">
+          <input type="hidden" name="id" id="appointment-id" />
+          <label>Paciente
+            <select required name="patientId" id="appointment-patient"></select>
+          </label>
+          <label>Data<input type="date" required name="date" /></label>
+          <label>Hora<input type="time" required name="time" /></label>
+          <label>Observações<textarea name="notes"></textarea></label>
+          <div class="actions-row">
+            <button type="submit">Salvar agendamento</button>
+            <button type="button" id="cancel-appointment" class="ghost">Cancelar edição</button>
+          </div>
+        </form>
+      </section>
+
+      <section id="agenda" class="tab-content">
+        <h2>Agenda (Calendário mensal)</h2>
+        <div class="card">
+          <div class="calendar-controls">
+            <button id="prev-year" class="ghost">« Ano anterior</button>
+            <button id="prev-month" class="ghost">‹ Mês anterior</button>
+            <strong id="calendar-title"></strong>
+            <button id="next-month" class="ghost">Mês seguinte ›</button>
+            <button id="next-year" class="ghost">Ano seguinte »</button>
+          </div>
+          <div class="calendar-shortcuts">
+            <button id="go-current-month" class="primary">Mês atual</button>
+            <button id="go-today" class="ghost">Hoje</button>
+          </div>
+        </div>
+        <div id="appointments-list" class="card list"></div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
