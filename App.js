@@ -36,7 +36,8 @@ function formatDateLabel(value) {
 }
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('inicio');
+  const [entered, setEntered] = useState(false);
+  const [activeTab, setActiveTab] = useState('agenda');
   const [patient, setPatient] = useState('');
   const [address, setAddress] = useState('');
   const [dateTime, setDateTime] = useState('');
@@ -143,6 +144,17 @@ export default function App() {
 
   return (
     <SafeAreaView style={styles.container}>
+      {!entered ? (
+        <View style={styles.form}>
+          <Text style={styles.title}>FisioAgenda</Text>
+          <Text style={styles.subtitle}>Seus atendimentos domiciliares, organizados.</Text>
+          <Text style={styles.cardText}>Clique para entrar no sistema.</Text>
+          <TouchableOpacity style={styles.addButton} onPress={() => setEntered(true)}>
+            <Text style={styles.buttonText}>Entrar</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+      <>
       <Text style={styles.title}>FisioAgenda</Text>
       <Text style={styles.subtitle}>Seus atendimentos domiciliares, organizados.</Text>
       <View style={styles.tabRow}>
@@ -157,7 +169,7 @@ export default function App() {
         <View style={styles.form}><Text style={styles.cardTitle}>Bem-vindo(a)</Text><Text style={styles.cardText}>Use as abas para navegar entre cadastro de pacientes, agendamento e agenda.</Text></View>
       ) : null}
 
-      {activeTab === 'agendamento' || activeTab === 'agenda' ? (
+      {activeTab === 'agenda' ? (
       <>
       <View style={styles.calendarControls}>
         <TouchableOpacity style={styles.modeButton} onPress={() => setCalendarCursor((prev) => new Date(prev.getFullYear() - 1, prev.getMonth(), 1))}>
@@ -184,6 +196,9 @@ export default function App() {
         </TouchableOpacity>
       </View>
 
+      </>) : null}
+
+      {activeTab === 'agendamento' ? (
       <View style={styles.form}>
         <TextInput style={styles.input} placeholder="Paciente" value={patient} onChangeText={setPatient} />
         <TextInput style={styles.input} placeholder="Endereço" value={address} onChangeText={setAddress} />
@@ -213,6 +228,10 @@ export default function App() {
         </View>
       </View>
 
+      </View>
+      ) : null}
+
+      {activeTab === 'agenda' ? (
       <FlatList
         data={visibleAppointments}
         keyExtractor={(item) => item.id}
@@ -239,15 +258,23 @@ export default function App() {
           </View>
         )}
       />
-      </>
       ) : null}
 
       {activeTab === 'pacientes' ? (
         <View style={styles.form}>
           <Text style={styles.cardTitle}>Cadastro de Paciente</Text>
-          <Text style={styles.cardText}>No app mobile atual, o cadastro é realizado no campo \"Paciente\" da aba Agendamento.</Text>
+          <Text style={styles.cardText}>Pacientes já cadastrados:</Text>
+          <FlatList
+            data={[...new Set(appointments.map((a) => a.patient))].filter(Boolean)}
+            keyExtractor={(item) => item}
+            renderItem={({ item }) => <Text style={styles.cardText}>• {item}</Text>}
+            ListEmptyComponent={<Text style={styles.emptyText}>Nenhum paciente cadastrado.</Text>}
+          />
+          <Text style={styles.cardText}>Para novo cadastro, crie o agendamento na aba Agendamento.</Text>
         </View>
       ) : null}
+      </>
+      )}
     </SafeAreaView>
   );
 }
