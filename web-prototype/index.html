@@ -94,8 +94,15 @@
               </select>
             </div>
           </label>
-              <label>Observações<textarea name="notes"></textarea></label>
-              <label><input type="checkbox" id="is-recurring" /> Agendamento recorrente</label>
+          <label>Observações<textarea name="notes"></textarea></label>
+          <label>Serviços da consulta</label>
+          <div class="weekday-list">
+            <label class="weekday-option"><input type="checkbox" name="services" value="Fisioterapia" /> Fisioterapia</label>
+            <label class="weekday-option"><input type="checkbox" name="services" value="Acupuntura" /> Acupuntura</label>
+            <label class="weekday-option"><input type="checkbox" name="services" value="Pilates" /> Pilates</label>
+            <label class="weekday-option"><input type="checkbox" name="services" value="RPG" /> RPG</label>
+          </div>
+          <label><input type="checkbox" id="is-recurring" /> Agendamento recorrente</label>
               <div id="recurrence-fields" class="hidden">
                 <label class="recurrence-title">Repetir em quais dias da semana?</label>
                 <div class="weekday-list">

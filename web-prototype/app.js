@@ -165,7 +165,8 @@ function renderMonthAppointmentsList(items, patientMap) {
   return items.map((a) => {
     const p = patientMap[a.patientId];
     const recurringAction = a.recurrenceGroupId ? `<button onclick="removeRecurringGroup('${a.recurrenceGroupId}')" class="danger">Excluir recorrência</button>` : '';
-    return `<div class="list-item"><strong>${p?.patientName || 'Paciente'}</strong><br/>Data: ${formatDateToBR(a.date)} às ${a.time}<br/>Endereço: ${p?.patientAddress || '-'}<br/>Observações: ${a.notes || '-'}<div class="inline-actions"><button onclick="editAppointment('${a.id}')">Editar</button><button onclick="removeAppointment('${a.id}')" class="danger">Excluir</button>${recurringAction}</div></div>`;
+    const services = Array.isArray(a.services) && a.services.length ? a.services.join(', ') : '-';
+    return `<div class="list-item"><strong>${p?.patientName || 'Paciente'}</strong><br/>Data: ${formatDateToBR(a.date)} às ${a.time}<br/>Serviços: ${services}<br/>Endereço: ${p?.patientAddress || '-'}<br/>Observações: ${a.notes || '-'}<div class="inline-actions"><button onclick="editAppointment('${a.id}')">Editar</button><button onclick="removeAppointment('${a.id}')" class="danger">Excluir</button>${recurringAction}</div></div>`;
   }).join('');
 }
 
@@ -193,6 +194,9 @@ window.editAppointment = (id) => {
     appointmentMinute.value = m;
     syncTimeHiddenField();
   }
+  appointmentForm.querySelectorAll('input[name="services"]').forEach((el) => {
+    el.checked = Array.isArray(a.services) && a.services.includes(el.value);
+  });
   setTab('agendamento');
 };
 window.removeAppointment = (id) => {
@@ -225,6 +229,7 @@ appointmentForm.addEventListener('submit', (e) => {
   try {
     syncTimeHiddenField();
     const data = Object.fromEntries(new FormData(appointmentForm).entries());
+    data.services = [...appointmentForm.querySelectorAll('input[name="services"]:checked')].map((el) => el.value);
     let selectedPatient = patients.find((x) => String(x.id) === String(data.patientId));
     if (!selectedPatient) {
       const selectedLabel = patientSelect.options[patientSelect.selectedIndex]?.textContent?.trim();
@@ -232,6 +237,7 @@ appointmentForm.addEventListener('submit', (e) => {
       if (selectedPatient) data.patientId = selectedPatient.id;
     }
     if (!data.patientId || !selectedPatient) return showToast('Selecione o paciente.', false);
+    if (!data.services.length) return showToast('Selecione ao menos um serviço.', false);
     if (data.id) {
       appointments = appointments.map((a) => (a.id === data.id ? data : a));
     } else if (recurringCheckbox.checked) {
