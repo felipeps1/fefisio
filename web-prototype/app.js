@@ -171,6 +171,7 @@ window.editPatient = (id) => {
 };
 window.removePatient = (id) => {
   const p = patients.find((x) => x.id === id);
+  if (!window.confirm(`Confirma excluir o paciente ${p?.patientName || ''}?`)) return;
   try {
     patients = patients.filter((x) => x.id !== id);
     appointments = appointments.filter((a) => a.patientId !== id);
@@ -189,8 +190,14 @@ window.editAppointment = (id) => {
   }
   setTab('agendamento');
 };
-window.removeAppointment = (id) => { appointments = appointments.filter((a) => a.id !== id); saveAll(); renderAppointments(); };
+window.removeAppointment = (id) => {
+  const appt = appointments.find((a) => a.id === id);
+  if (!window.confirm(`Confirma excluir o agendamento de ${appt?.date || ''} às ${appt?.time || ''}?`)) return;
+  appointments = appointments.filter((a) => a.id !== id);
+  saveAll(); renderAppointments();
+};
 window.removeRecurringGroup = (groupId) => {
+  if (!window.confirm('Confirma excluir toda a recorrência deste agendamento?')) return;
   appointments = appointments.filter((a) => a.recurrenceGroupId !== groupId);
   saveAll(); renderAppointments();
   showToast('Recorrência excluída com sucesso.');
