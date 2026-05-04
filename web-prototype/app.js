@@ -58,6 +58,9 @@ const recurringCheckbox = document.getElementById('is-recurring');
 const recurrenceFields = document.getElementById('recurrence-fields');
 const recurrenceEndDate = document.getElementById('recurrence-end-date');
 const todayMessage = document.getElementById('today-message');
+const appointmentHour = document.getElementById('appointment-hour');
+const appointmentMinute = document.getElementById('appointment-minute');
+const appointmentTimeHidden = document.getElementById('appointment-time-hidden');
 
 let patients = normalizePatients(safeReadArray(STORAGE.patients));
 let appointments = normalizeAppointments(safeReadArray(STORAGE.appointments));
@@ -86,6 +89,9 @@ function showPatientListMode() { patientForm.classList.add('hidden'); patientsLi
 function showPatientFormMode() { patientForm.classList.remove('hidden'); patientsList.classList.remove('hidden'); }
 function resetPatientForm() { patientForm.reset(); patientForm.id.value = ''; showPatientListMode(); }
 function resetAppointmentForm() { appointmentForm.reset(); appointmentForm.id.value = ''; }
+function syncTimeHiddenField() {
+  appointmentTimeHidden.value = `${appointmentHour.value}:${appointmentMinute.value}`;
+}
 function getRecurringDates(startDate, endDate, weekdays) {
   const dates = [];
   const cursor = new Date(`${startDate}T00:00:00`);
@@ -175,6 +181,12 @@ window.removePatient = (id) => {
 window.editAppointment = (id) => {
   const a = appointments.find((x) => x.id === id); if (!a) return;
   Object.entries(a).forEach(([k,v]) => { if (appointmentForm[k]) appointmentForm[k].value = v; });
+  if (a.time) {
+    const [h, m] = a.time.split(':');
+    appointmentHour.value = h;
+    appointmentMinute.value = m;
+    syncTimeHiddenField();
+  }
   setTab('agendamento');
 };
 window.removeAppointment = (id) => { appointments = appointments.filter((a) => a.id !== id); saveAll(); renderAppointments(); };
@@ -199,6 +211,7 @@ patientForm.addEventListener('submit', (e) => {
 appointmentForm.addEventListener('submit', (e) => {
   e.preventDefault();
   try {
+    syncTimeHiddenField();
     const data = Object.fromEntries(new FormData(appointmentForm).entries());
     let selectedPatient = patients.find((x) => String(x.id) === String(data.patientId));
     if (!selectedPatient) {
@@ -237,6 +250,8 @@ enterSystemBtn.addEventListener('click', () => {
   setTab('home');
 });
 recurringCheckbox.addEventListener('change', () => recurrenceFields.classList.toggle('hidden', !recurringCheckbox.checked));
+appointmentHour.addEventListener('change', syncTimeHiddenField);
+appointmentMinute.addEventListener('change', syncTimeHiddenField);
 cancelPatientBtn.addEventListener('click', resetPatientForm);
 cancelAppointmentBtn.addEventListener('click', resetAppointmentForm);
 repeatPatientBtn.addEventListener('click', () => {
@@ -257,3 +272,13 @@ todayMessage.textContent = `Seja bem-vindo, hoje é dia ${new Intl.DateTimeForma
 renderPatients();
 showPatientListMode();
 renderAppointments();
+for (let h = 0; h < 24; h++) {
+  const hh = String(h).padStart(2, '0');
+  const option = document.createElement('option');
+  option.value = hh;
+  option.textContent = hh;
+  appointmentHour.appendChild(option);
+}
+appointmentHour.value = '08';
+appointmentMinute.value = '00';
+syncTimeHiddenField();

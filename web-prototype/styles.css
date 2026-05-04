@@ -43,3 +43,5 @@ button[type='submit'], .primary { background:#0b3d91; color:white; border:none; 
 .weekday-option input { width:18px; height:18px; margin:0; }
 .recurrence-title { margin-bottom:10px; }
 .recurrence-end { margin-top:10px; }
+.time-selectors { display:flex; align-items:center; gap:8px; }
+.time-selectors select { min-width:90px; }
