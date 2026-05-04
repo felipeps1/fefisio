@@ -24,6 +24,19 @@ function normalizePatients(rawPatients) {
   return normalized;
 }
 
+function normalizeAppointments(rawAppointments) {
+  let changed = false;
+  const normalized = rawAppointments.map((a, i) => {
+    if (!a.id || a.id === 'undefined') {
+      changed = true;
+      return { ...a, id: `a_${Date.now()}_${i}` };
+    }
+    return a;
+  });
+  if (changed) localStorage.setItem(STORAGE.appointments, JSON.stringify(normalized));
+  return normalized;
+}
+
 const tabs = document.querySelectorAll('.tab');
 const tabContents = document.querySelectorAll('.tab-content');
 const patientForm = document.getElementById('patient-form');
@@ -40,7 +53,7 @@ const patientNameInput = patientForm.patientName;
 const calendarTitle = document.getElementById('calendar-title');
 
 let patients = normalizePatients(safeReadArray(STORAGE.patients));
-let appointments = safeReadArray(STORAGE.appointments);
+let appointments = normalizeAppointments(safeReadArray(STORAGE.appointments));
 let calendarCursor = new Date();
 
 const showToast = (msg, ok = true) => {
@@ -150,7 +163,7 @@ patientForm.addEventListener('submit', (e) => {
   const action = data.id ? 'alterado' : 'criado';
   try {
     if (data.id) patients = patients.map((p) => (p.id === data.id ? data : p));
-    else patients.push({ id: `${Date.now()}`, ...data });
+    else patients.push({ ...data, id: `p_${Date.now()}` });
     resetPatientForm(); saveAll(); renderPatients(); renderAppointments();
     showToast(`Cadastro do paciente ${data.patientName} ${action} com sucesso.`);
   } catch { showToast(`Erro ao alterar o paciente ${data.patientName}.`, false); }
@@ -168,7 +181,7 @@ appointmentForm.addEventListener('submit', (e) => {
     }
     if (!data.patientId || !selectedPatient) return showToast('Selecione o paciente.', false);
     if (data.id) appointments = appointments.map((a) => (a.id === data.id ? data : a));
-    else appointments.push({ id: `${Date.now()}`, ...data });
+    else appointments.push({ ...data, id: `a_${Date.now()}` });
     const formattedDate = data.date.includes('-') ? data.date.split('-').reverse().join('/') : data.date;
     resetAppointmentForm(); saveAll(); renderAppointments();
     showToast(`Confirmado agendamento do paciente ${selectedPatient.patientName} cadastrado para ${formattedDate} às ${data.time}hs.`);
