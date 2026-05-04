@@ -59,6 +59,7 @@ const recurrenceFields = document.getElementById('recurrence-fields');
 const recurrenceEndDate = document.getElementById('recurrence-end-date');
 const todayMessage = document.getElementById('today-message');
 const reportsContent = document.getElementById('reports-content');
+let reportCharts = [];
 const appointmentHour = document.getElementById('appointment-hour');
 const appointmentMinute = document.getElementById('appointment-minute');
 const appointmentTimeHidden = document.getElementById('appointment-time-hidden');
@@ -138,13 +139,23 @@ function renderReports() {
     byPeriod[getPeriodKey(a.time)].add(patientId);
   });
 
-  const renderMap = (obj) => Object.entries(obj).map(([k, v]) => `<li>${k}: ${v.size} paciente(s)</li>`).join('');
-  reportsContent.innerHTML = `
-    <h3>Pacientes por serviço</h3><ul>${renderMap(byService)}</ul>
-    <h3>Pacientes por mês</h3><ul>${renderMap(byMonth)}</ul>
-    <h3>Pacientes por período</h3><ul>${renderMap(byPeriod)}</ul>
-    <h3>Pacientes em finais de semana</h3><ul>${renderMap(weekend)}</ul>
-  `;
+  reportCharts.forEach((c) => c.destroy());
+  reportCharts = [];
+  const make = (id, cfg) => {
+    const el = document.getElementById(id);
+    if (!el || !window.Chart) return;
+    reportCharts.push(new Chart(el, cfg));
+  };
+  const mapToData = (obj) => ({ labels: Object.keys(obj), values: Object.values(obj).map((v) => v.size) });
+  const service = mapToData(byService);
+  const month = mapToData(byMonth);
+  const period = mapToData(byPeriod);
+  const weekendData = mapToData(weekend);
+
+  make('chart-service', { type: 'doughnut', data: { labels: service.labels, datasets: [{ data: service.values, backgroundColor: ['#2b6ef2','#60a5fa','#34d399','#a78bfa'] }] } });
+  make('chart-period', { type: 'bar', data: { labels: period.labels, datasets: [{ data: period.values, backgroundColor: ['#4f46e5','#2563eb','#0ea5e9'] }] }, options: { indexAxis: 'y' } });
+  make('chart-month', { type: 'line', data: { labels: month.labels, datasets: [{ label:'Pacientes', data: month.values, borderColor:'#1d4ed8', backgroundColor:'rgba(29,78,216,0.2)', fill:true, tension:0.3 }] } });
+  make('chart-weekend', { type: 'polarArea', data: { labels: weekendData.labels, datasets: [{ data: weekendData.values, backgroundColor: ['#14b8a6','#0f766e'] }] } });
 }
 
 function renderPatients() {

@@ -45,3 +45,4 @@ button[type='submit'], .primary { background:#0b3d91; color:white; border:none; 
 .recurrence-end { margin-top:10px; }
 .time-selectors { display:flex; align-items:center; gap:8px; }
 .time-selectors select { min-width:90px; }
+.reports-grid { display:grid; grid-template-columns: repeat(auto-fit,minmax(280px,1fr)); gap:12px; }
