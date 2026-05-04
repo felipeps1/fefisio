@@ -37,7 +37,6 @@
       <button class="tab" data-tab="pacientes">Cadastro de Paciente</button>
       <button class="tab" data-tab="agendamento">Agendamento de Consulta</button>
       <button class="tab" data-tab="agenda">Agenda</button>
-      <button class="tab" data-tab="relatorios">Relatórios</button>
     </nav>
 
     <main>
@@ -141,19 +140,8 @@
         </div>
         <div id="appointments-list" class="card list"></div>
       </section>
-      <section id="relatorios" class="tab-content">
-        <h2>Relatórios</h2>
-        <div id="reports-content" class="reports-grid">
-          <div class="card"><h3>Pacientes por serviço</h3><canvas id="chart-service"></canvas></div>
-          <div class="card"><h3>Pacientes por período</h3><canvas id="chart-period"></canvas></div>
-          <div class="card"><h3>Pacientes por mês</h3><canvas id="chart-month"></canvas></div>
-          <div class="card"><h3>Finais de semana</h3><canvas id="chart-weekend"></canvas></div>
-        </div>
-      </section>
       </main>
     </section>
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="app.js"></script>
   </body>
 </html>
