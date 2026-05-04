@@ -82,11 +82,11 @@
             <select required name="patientId" id="appointment-patient"></select>
           </label>
           <label>Data<input type="date" required name="date" /></label>
-              <label>Hora<input type="time" required name="time" /></label>
+          <label>Hora<input type="time" required name="time" step="300" /></label>
               <label>Observações<textarea name="notes"></textarea></label>
               <label><input type="checkbox" id="is-recurring" /> Agendamento recorrente</label>
               <div id="recurrence-fields" class="hidden">
-                <label>Repetir em quais dias da semana?</label>
+                <label class="recurrence-title">Repetir em quais dias da semana?</label>
                 <div class="weekday-list">
                   <label class="weekday-option"><input type="checkbox" name="weekdays" value="1" /> Segunda-Feira</label>
                   <label class="weekday-option"><input type="checkbox" name="weekdays" value="2" /> Terça-Feira</label>
@@ -96,7 +96,7 @@
                   <label class="weekday-option"><input type="checkbox" name="weekdays" value="6" /> Sábado</label>
                   <label class="weekday-option"><input type="checkbox" name="weekdays" value="0" /> Domingo</label>
                 </div>
-                <label>Repetir até<input type="date" id="recurrence-end-date" /></label>
+                <label class="recurrence-end">Repetir até<input type="date" id="recurrence-end-date" /></label>
               </div>
               <div class="actions-row">
                 <button type="submit">Salvar agendamento</button>

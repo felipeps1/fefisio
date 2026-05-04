@@ -83,7 +83,7 @@ const saveAll = () => {
 };
 
 function showPatientListMode() { patientForm.classList.add('hidden'); patientsList.classList.remove('hidden'); }
-function showPatientFormMode() { patientForm.classList.remove('hidden'); patientsList.classList.add('hidden'); }
+function showPatientFormMode() { patientForm.classList.remove('hidden'); patientsList.classList.remove('hidden'); }
 function resetPatientForm() { patientForm.reset(); patientForm.id.value = ''; showPatientListMode(); }
 function resetAppointmentForm() { appointmentForm.reset(); appointmentForm.id.value = ''; }
 function getRecurringDates(startDate, endDate, weekdays) {
@@ -105,7 +105,9 @@ function renderPatients() {
     const option = document.createElement('option'); option.value = p.id; option.textContent = p.patientName; patientSelect.appendChild(option);
   });
   if (!patients.length) return (patientsList.innerHTML = '<p class="empty">Nenhum paciente cadastrado.</p>');
+  const helper = '<p class="empty">Para editar um paciente já cadastrado, clique em "Editar" no cartão abaixo.</p>';
   patientsList.innerHTML = patients.map((p) => `<div class="list-item"><strong>${p.patientName}</strong><br/>Endereço: ${p.patientAddress}<br/>Tel paciente: ${p.patientPhone}<br/>Resp. financeiro: ${p.financialName} (${p.financialPhone})<div class="inline-actions"><button onclick="editPatient('${p.id}')">Editar</button><button onclick="removePatient('${p.id}')" class="danger">Excluir</button></div></div>`).join('');
+  patientsList.innerHTML = helper + patientsList.innerHTML;
 }
 
 function renderMonthGrid(items, patientMap, year, month) {
